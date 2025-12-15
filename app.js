@@ -1,4 +1,4 @@
-const fs = require("fs");
+const sumRequestHandler = require("./addition");
 const requestHandler = (req, res) => {
   if (req.url === "/") {
     res.setHeader("Content-Type", "text/html");
@@ -23,25 +23,11 @@ const requestHandler = (req, res) => {
     return res.end();
     //---------
   } else if (req.url === "/calculate-result" && req.method === "POST") {
-    const body = [];
-    req.on("data", (chunks) => {
-      body.push(chunks);
-    });
-    req.on("end", () => {
-      const fullBody = Buffer.concat(body).toString();
-      console.log(fullBody);
-      const params = new URLSearchParams(fullBody); //encoded string se key-val pair
-      const paramsObj = Object.fromEntries(params);
-      const result = paramsObj.num1 + paramsObj.num2;
-      console.log(result);
-      fs.writeFileSync(
-        "user.txt",
-        `Sum of num1 & num2 : ${JSON.stringify(result)}`
-      );
-    });
+    sumRequestHandler(req, res);
+  } else {
+    res.setHeader("Content-Type", "text/html");
+    res.write("<body><h1>End of the web page!</h1></body>");
+    return res.end();
   }
-  res.setHeader("Content-Type", "text/html");
-  res.write("<body><h1>End of the web page!</h1></body>");
-  return res.end();
 };
 module.exports = requestHandler;
